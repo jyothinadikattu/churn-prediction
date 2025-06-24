@@ -1,0 +1,24 @@
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+from sklearn.model_selection import train_test_split
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.metrics import classification_report,confusion_matrix,accuracy_score
+df= pandas.read_csv('/content/customer_churn_data.csv')
+print(df.head())
+df.drop(["customerID"],axis=1,inplace=True)
+print(df.head())
+df["TotalCharges"]=pd.to_numeric(df["TotalCharges"],errors="coerce")
+df.dropna(inplace=True)
+df["Churn"]=df["Churn"].map({"Yes":1,"No":0})
+df=pd.get_dummies(df,drop_first=True)
+X=df.drop("Churn",axis=1)
+y=df["Churn"]
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+model = RandomForestClassifier(n_estimators=100,random_state=42)
+model.fit(X_train, y_train)
+y_pred = model.predict(X_test)
+print(classification_report(y_test, y_pred))
+print(confusion_matrix(y_test, y_pred))
+print(accuracy_score(y_test, y_pred))
